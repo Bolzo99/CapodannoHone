@@ -1,0 +1,7 @@
+{
+  "name": "Capodanno a Hône 2025",
+  "description": "Sito informativo per l'evento di Capodanno in Valle d'Aosta, con programma dettagliato, menù del cenone e contatti utili.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
