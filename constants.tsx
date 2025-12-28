@@ -73,3 +73,26 @@ export const NYE_MENU: MenuItem[] = [
     ingredients: 'Selezione di dolcezze della tradizione, lievitati delle feste e brindisi d\'inizio.' 
   },
 ];
+
+export const HONEST_NYE_MENU: MenuItem[] = [
+  { 
+    category: 'Antipasti', 
+    dish: 'L\'Antipastone della Baita Vera', 
+    ingredients: 'Salumi locali tagliati grossi che sanno di montagna, un vol-au-vent che scoppia di fonduta seria, verdurine sott\'olio fatte in casa e speck di quello buono che abbraccia il radicchio senza troppi complimenti. C\'è la ciccia e c\'è pure l\'opzione veg, così nessuno si lamenta.' 
+  },
+  { 
+    category: 'Primi', 
+    dish: 'La Lasagna Bianca della Tradizione', 
+    ingredients: 'Altro che evoluzione di lamina, questa è una signora lasagna fatta con la sfoglia all\'uovo tirata come si deve, un ragù bianco di carne seria e una besciamella così morbida che ti commuovi. C\'è pure la versione senza carne per i soliti noti.' 
+  },
+  { 
+    category: 'Secondi', 
+    dish: 'Polenta, Funghi e Polpettone (Quello Serio)', 
+    ingredients: 'Polenta di St. Marcel che è oro colato, funghi trifolati che sanno di bosco e non di plastica, e un polpettone alle erbe fini che è nobile solo perché la carne è di prima scelta, mica per il titolo nobiliare.' 
+  },
+  { 
+    category: 'Dolci', 
+    dish: 'Zuccheri, Lievitati e il Botto Finale', 
+    ingredients: 'Una bella sfilata di dolci fatti in casa, panettoni e pandori artigianali che sanno di burro vero e un calice di quello buono per brindare all\'anno nuovo senza farsi venire il mal di testa.' 
+  },
+];

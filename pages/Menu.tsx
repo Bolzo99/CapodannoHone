@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { NYE_MENU } from '../constants';
+import { NYE_MENU, HONEST_NYE_MENU } from '../constants'; // Importa entrambi
 import { UtensilsCrossed, Star, Sparkles, Loader2, Heart } from 'lucide-react';
 import { MenuItem } from '../types';
 
@@ -10,37 +10,20 @@ const Menu: React.FC = () => {
 
   const categories = Array.from(new Set(currentMenu.map((item) => item.category)));
 
-  // Funzione locale per "trasformare" il menù in versione onesta
-  const generateHonestMenu = (menu: MenuItem[]): MenuItem[] => {
-    return menu.map((item) => ({
-      category: item.category,
-      dish: item.dish
-        .replace(/Salmon|Foie|Truffle|Caviar/gi, (match) => `Ottimo ${match} ma senza fronzoli`)
-        .replace(/Risotto|Tartare|Carpaccio/gi, (match) => `Classico ${match}, niente fumo negli occhi`)
-        .replace(/Fusion|Gourmet|Chef special/gi, (match) => `Versione montanara di ${match}`)
-        .concat(' 🍽️'), // emoji divertente
-      ingredients: item.ingredients
-        ? item.ingredients
-            .replace(/aromatic herbs|saffron|white truffle/gi, 'ingredienti veri e genuini')
-            .replace(/microgreens|edible flowers/gi, 'verdure semplici e buone')
-        : ''
-    }));
-  };
+  const toggleHonesty = () => {
+    if (isHonestMode) {
+      setCurrentMenu(NYE_MENU);
+      setIsHonestMode(false);
+      return;
+    }
 
-  const toggleHonesty = async () => {
+    // Simuliamo un brevissimo caricamento per dare enfasi al cambio
     setIsLoading(true);
-
     setTimeout(() => {
-      if (isHonestMode) {
-        setCurrentMenu(NYE_MENU);
-        setIsHonestMode(false);
-      } else {
-        const honestMenu = generateHonestMenu(NYE_MENU);
-        setCurrentMenu(honestMenu);
-        setIsHonestMode(true);
-      }
+      setCurrentMenu(HONEST_NYE_MENU);
+      setIsHonestMode(true);
       setIsLoading(false);
-    }, 500); // piccolo delay per simulare caricamento
+    }, 800); 
   };
 
   return (
@@ -76,6 +59,7 @@ const Menu: React.FC = () => {
       </header>
 
       <div className={`max-w-2xl mx-auto glass-card rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden transition-all duration-500 ${isHonestMode ? 'bg-blue-50/90 border-blue-200' : 'bg-white/80'}`}>
+        {/* Elementi Decorativi */}
         <div className={`absolute -top-12 -right-12 w-32 h-32 rounded-full opacity-50 blur-2xl transition-colors duration-500 ${isHonestMode ? 'bg-blue-200' : 'bg-blue-50'}`}></div>
         <div className={`absolute -bottom-12 -left-12 w-48 h-48 rounded-full opacity-30 blur-3xl transition-colors duration-500 ${isHonestMode ? 'bg-indigo-200' : 'bg-blue-100'}`}></div>
 
