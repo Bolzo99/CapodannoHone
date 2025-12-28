@@ -1,8 +1,6 @@
-
 import React, { useState } from 'react';
 import { NYE_MENU } from '../constants';
-import { UtensilsCrossed, Star, Ghost, Sparkles, Loader2, Heart } from 'lucide-react';
-import { GoogleGenAI, Type } from "@google/genai";
+import { UtensilsCrossed, Star, Sparkles, Loader2, Heart } from 'lucide-react';
 import { MenuItem } from '../types';
 
 const Menu: React.FC = () => {
@@ -12,56 +10,37 @@ const Menu: React.FC = () => {
 
   const categories = Array.from(new Set(currentMenu.map((item) => item.category)));
 
+  // Funzione locale per "trasformare" il menù in versione onesta
+  const generateHonestMenu = (menu: MenuItem[]): MenuItem[] => {
+    return menu.map((item) => ({
+      category: item.category,
+      dish: item.dish
+        .replace(/Salmon|Foie|Truffle|Caviar/gi, (match) => `Ottimo ${match} ma senza fronzoli`)
+        .replace(/Risotto|Tartare|Carpaccio/gi, (match) => `Classico ${match}, niente fumo negli occhi`)
+        .replace(/Fusion|Gourmet|Chef special/gi, (match) => `Versione montanara di ${match}`)
+        .concat(' 🍽️'), // emoji divertente
+      ingredients: item.ingredients
+        ? item.ingredients
+            .replace(/aromatic herbs|saffron|white truffle/gi, 'ingredienti veri e genuini')
+            .replace(/microgreens|edible flowers/gi, 'verdure semplici e buone')
+        : ''
+    }));
+  };
+
   const toggleHonesty = async () => {
-    if (isHonestMode) {
-      setCurrentMenu(NYE_MENU);
-      setIsHonestMode(false);
-      return;
-    }
-
     setIsLoading(true);
-    try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: `Trasforma questo menù raffinato di Capodanno in una versione 'onestamente verace'. 
-        Usa un tono ironico, divertente e terra-terra (in italiano), ma fai capire chiaramente che le materie prime sono eccellenti e che il cibo è di altissima qualità. 
-        Prendi in giro i nomi "fighetti" del menù originale ma elogia la sostanza e la genuinità dei piatti da montagna.
-        Menù originale: ${JSON.stringify(NYE_MENU)}`,
-        config: {
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: Type.OBJECT,
-            properties: {
-              honestMenu: {
-                type: Type.ARRAY,
-                items: {
-                  type: Type.OBJECT,
-                  properties: {
-                    category: { type: Type.STRING },
-                    dish: { type: Type.STRING },
-                    ingredients: { type: Type.STRING }
-                  },
-                  required: ["category", "dish", "ingredients"]
-                }
-              }
-            },
-            required: ["honestMenu"]
-          }
-        }
-      });
 
-      const data = JSON.parse(response.text || '{}');
-      if (data.honestMenu) {
-        setCurrentMenu(data.honestMenu);
+    setTimeout(() => {
+      if (isHonestMode) {
+        setCurrentMenu(NYE_MENU);
+        setIsHonestMode(false);
+      } else {
+        const honestMenu = generateHonestMenu(NYE_MENU);
+        setCurrentMenu(honestMenu);
         setIsHonestMode(true);
       }
-    } catch (error) {
-      console.error("Errore nella traduzione verace:", error);
-      alert("La montagna si rifiuta di essere onesta oggi. Riprova più tardi!");
-    } finally {
       setIsLoading(false);
-    }
+    }, 500); // piccolo delay per simulare caricamento
   };
 
   return (
@@ -97,7 +76,6 @@ const Menu: React.FC = () => {
       </header>
 
       <div className={`max-w-2xl mx-auto glass-card rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden transition-all duration-500 ${isHonestMode ? 'bg-blue-50/90 border-blue-200' : 'bg-white/80'}`}>
-        {/* Decorative elements */}
         <div className={`absolute -top-12 -right-12 w-32 h-32 rounded-full opacity-50 blur-2xl transition-colors duration-500 ${isHonestMode ? 'bg-blue-200' : 'bg-blue-50'}`}></div>
         <div className={`absolute -bottom-12 -left-12 w-48 h-48 rounded-full opacity-30 blur-3xl transition-colors duration-500 ${isHonestMode ? 'bg-indigo-200' : 'bg-blue-100'}`}></div>
 
