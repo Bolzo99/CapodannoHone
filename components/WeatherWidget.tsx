@@ -1,6 +1,5 @@
 
 import React, { useState, useEffect } from 'react';
-import { GoogleGenAI, Type } from "@google/genai";
 import { Snowflake, Sun, Cloud, CloudRain, Thermometer, Wind, Loader2 } from 'lucide-react';
 
 interface DayWeather {
@@ -17,53 +16,55 @@ const WeatherWidget: React.FC = () => {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    const fetchWeather = async () => {
-      try {
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        const response = await ai.models.generateContent({
-          model: "gemini-3-flash-preview",
-          contents: "Provide a typical weather outlook for Hône, Val d'Aosta, Italy from December 31st to January 4th. Include min/max temperatures in Celsius and general conditions.",
-          config: {
-            responseMimeType: "application/json",
-            responseSchema: {
-              type: Type.OBJECT,
-              properties: {
-                forecast: {
-                  type: Type.ARRAY,
-                  items: {
-                    type: Type.OBJECT,
-                    properties: {
-                      date: { type: Type.STRING, description: "The date, e.g., '31 Dic'" },
-                      tempMin: { type: Type.NUMBER },
-                      tempMax: { type: Type.NUMBER },
-                      condition: { 
-                        type: Type.STRING, 
-                        enum: ['snow', 'sun', 'cloud', 'rain'],
-                        description: "Standard condition identifier" 
-                      },
-                      description: { type: Type.STRING, description: "Short description in Italian" }
-                    },
-                    required: ["date", "tempMin", "tempMax", "condition", "description"]
-                  }
-                }
-              },
-              required: ["forecast"]
-            }
-          }
-        });
+  const fetchWeather = async () => {
+    try {
+      const res = await fetch(
+        "https://api.open-meteo.com/v1/forecast" +
+        "?latitude=45.612" +
+        "&longitude=7.734" +
+        "&daily=temperature_2m_min,temperature_2m_max,weathercode" +
+        "&timezone=Europe/Rome"
+      );
 
-        const data = JSON.parse(response.text || '{}');
-        setWeatherData(data.forecast);
-      } catch (err) {
-        console.error("Weather fetch failed:", err);
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
+      const data = await res.json();
 
-    fetchWeather();
-  }, []);
+      const mapped = data.daily.time.map((date: string, i: number) => ({
+        date: new Date(date).toLocaleDateString("it-IT", {
+          day: "2-digit",
+          month: "short",
+        }),
+        tempMin: Math.round(data.daily.temperature_2m_min[i]),
+        tempMax: Math.round(data.daily.temperature_2m_max[i]),
+        condition: mapWeatherCode(data.daily.weathercode[i]),
+        description: weatherDescription(data.daily.weathercode[i]),
+      }));
+
+      setWeatherData(mapped.slice(0, 5));
+    } catch (e) {
+      console.error(e);
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchWeather();
+}, []);
+
+const mapWeatherCode = (code: number): DayWeather["condition"] => {
+  if ([71, 73, 75, 77, 85, 86].includes(code)) return "snow";
+  if ([61, 63, 65].includes(code)) return "rain";
+  if ([0, 1].includes(code)) return "sun";
+  return "cloud";
+};
+
+const weatherDescription = (code: number): string => {
+  if ([71, 73, 75].includes(code)) return "Nevicate";
+  if ([61, 63, 65].includes(code)) return "Pioggia";
+  if ([0].includes(code)) return "Sereno";
+  if ([1, 2].includes(code)) return "Parzialmente nuvoloso";
+  return "Nuvoloso";
+};
 
   const getIcon = (condition: string) => {
     switch (condition) {
