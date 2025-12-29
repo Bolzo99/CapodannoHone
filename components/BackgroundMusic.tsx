@@ -67,9 +67,14 @@ const BackgroundMusic: React.FC = () => {
   const handleTrackEnd = () => {
     const nextIndex = (currentTrackIndex + 1) % playlist.length;
     setCurrentTrackIndex(nextIndex);
-    // Il cambio di src farà ricaricare l'audio
+  };
+
+  const handleCanPlay = () => {
+    // Quando l'audio è pronto, riprendi la riproduzione se era in play
     if (isPlaying && audioRef.current) {
-      audioRef.current.play();
+      audioRef.current.play().catch(err => {
+        console.log('Errore riproduzione:', err);
+      });
     }
   };
 
@@ -84,6 +89,7 @@ const BackgroundMusic: React.FC = () => {
         ref={audioRef}
         src={playlist[currentTrackIndex]}
         onEnded={handleTrackEnd}
+        onCanPlay={handleCanPlay}
       />
 
       {/* Splash Screen */}
@@ -111,7 +117,7 @@ const BackgroundMusic: React.FC = () => {
         </div>
       )}
       
-      <div className="fixed bottom-6 right-6 z-50 bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl p-4 border border-slate-200">
+      <div className="fixed bottom-24 right-4 md:bottom-6 md:right-6 z-50 bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl p-4 border border-slate-200">
         <div className="flex items-center gap-3">
           {/* Icona musica */}
           <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl">
