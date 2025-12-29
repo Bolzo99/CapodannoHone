@@ -3,6 +3,7 @@ import React from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Snowfall from './components/Snowfall';
+import BackgroundMusic from './components/BackgroundMusic';
 import Home from './pages/Home';
 import Program from './pages/Program';
 import Menu from './pages/Menu';
@@ -15,6 +16,7 @@ const App: React.FC = () => {
       <div className="min-h-screen text-slate-900 selection:bg-blue-100 selection:text-blue-900">
         {/* Snowfall is now at z-0, so we ensure the main content is relative and at a higher z-index */}
         <Snowfall />
+        <BackgroundMusic />
         
         {/* Background Gradients */}
         <div className="fixed inset-0 -z-10 pointer-events-none opacity-40">
